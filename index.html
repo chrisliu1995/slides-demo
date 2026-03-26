@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>口播稿演示模板</title>
+    
+    <!-- KaTeX 数学公式 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    
+    <!-- Prism 代码高亮 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    
+    <style>
+        /* ===========================================
+           基础样式
+           =========================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        /* ===========================================
+           幻灯片基础
+           =========================================== */
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding: 60px 80px;
+        }
+
+        /* 内容容器 */
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* ===========================================
+           类型 1: 封面页 (Title)
+           =========================================== */
+        .slide-title {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .slide-title .main-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .slide-title .subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            opacity: 0.8;
+            font-weight: 300;
+        }
+
+        .slide-title .speaker {
+            margin-top: 60px;
+            font-size: 1.1rem;
+            opacity: 0.6;
+        }
+
+        /* ===========================================
+           类型 2: 内容页 (Content)
+           =========================================== */
+        .slide-content-page {
+            background: #fafafa;
+            color: #1a1a1a;
+        }
+
+        .slide-content-page h2 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 600;
+            margin-bottom: 40px;
+            color: #1a1a2e;
+        }
+
+        .bullet-list {
+            list-style: none;
+            font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+            line-height: 1.8;
+        }
+
+        .bullet-list li {
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 20px;
+        }
+
+        .bullet-list li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #e94560;
+            font-weight: bold;
+        }
+
+        .bullet-list li strong {
+            color: #0f3460;
+        }
+
+        /* ===========================================
+           类型 3: 图文页 (Image)
+           =========================================== */
+        .slide-image {
+            background: white;
+        }
+
+        .layout-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            height: 100%;
+        }
+
+        .text-side h2 {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            margin-bottom: 30px;
+            color: #1a1a2e;
+        }
+
+        .text-side p {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            line-height: 1.8;
+            color: #444;
+        }
+
+        .image-side {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-side img {
+            max-width: 100%;
+            max-height: 60vh;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        /* ===========================================
+           类型 4: 公式页 (Formula)
+           =========================================== */
+        .slide-formula {
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .formula-container {
+            text-align: center;
+        }
+
+        .formula-container h2 {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            margin-bottom: 50px;
+            color: #495057;
+        }
+
+        .formula-box {
+            background: white;
+            padding: 60px 80px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            display: inline-block;
+            margin-bottom: 40px;
+        }
+
+        .formula-explanation {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        /* ===========================================
+           类型 5: 代码页 (Code)
+           =========================================== */
+        .slide-code {
+            background: #1e1e1e;
+            color: #d4d4d4;
+        }
+
+        .slide-code h2 {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            margin-bottom: 30px;
+            color: #fff;
+        }
+
+        .code-container {
+            background: #2d2d2d;
+            border-radius: 12px;
+            overflow: hidden;
+            max-height: 65vh;
+        }
+
+        .code-header {
+            background: #3c3c3c;
+            padding: 12px 20px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .code-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .code-dot.red { background: #ff5f56; }
+        .code-dot.yellow { background: #ffbd2e; }
+        .code-dot.green { background: #27c93f; }
+
+        .code-container pre {
+            margin: 0;
+            padding: 20px;
+            overflow: auto;
+            max-height: calc(65vh - 40px);
+            font-size: clamp(0.85rem, 1.5vw, 1rem);
+            line-height: 1.6;
+        }
+
+        /* ===========================================
+           类型 6: 引用页 (Quote)
+           =========================================== */
+        .slide-quote {
+            background: #1a1a2e;
+            color: white;
+            text-align: center;
+        }
+
+        .quote-text {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 300;
+            line-height: 1.4;
+            font-style: italic;
+            margin-bottom: 40px;
+        }
+
+        .quote-author {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            opacity: 0.7;
+        }
+
+        /* ===========================================
+           演讲者备注
+           =========================================== */
+        .speaker-notes {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #2d2d2d;
+            color: #fff;
+            padding: 20px 40px;
+            font-size: 14px;
+            z-index: 1000;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .speaker-mode .speaker-notes {
+            display: block;
+        }
+
+        .speaker-mode .slide {
+            height: calc(100vh - 150px);
+        }
+
+        /* ===========================================
+           导航
+           =========================================== */
+        .nav-hint {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(0,0,0,0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            z-index: 100;
+        }
+
+        .page-number {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            color: rgba(0,0,0,0.4);
+            font-size: 14px;
+            z-index: 100;
+        }
+
+        .slide-dark .page-number {
+            color: rgba(255,255,255,0.4);
+        }
+
+        /* ===========================================
+           响应式
+           =========================================== */
+        @media (max-width: 900px) {
+            .slide {
+                padding: 40px;
+            }
+
+            .layout-split {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .image-side img {
+                max-height: 40vh;
+            }
+        }
+
+        @media (max-height: 700px) {
+            .slide {
+                padding: 30px 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 第1页: 封面 -->
+    <section class="slide slide-title slide-dark">
+        <div class="slide-content">
+            <h1 class="main-title">AI 智能体开发</h1>
+            <p class="subtitle">从 RAG 到 Tool Calling 的技术实践</p>
+            <p class="speaker">演讲者：刘鹏程</p>
+        </div>
+        <div class="speaker-notes">
+            开场白：大家好，今天我来分享我们在 AI 智能体开发方面的一些实践经验...
+        </div>
+    </section>
+
+    <!-- 第2页: 内容页 -->
+    <section class="slide slide-content-page">
+        <div class="slide-content">
+            <h2>今天的内容</h2>
+            <ul class="bullet-list">
+                <li><strong>RAG 检索增强生成</strong> — 如何让 AI 读懂你的文档</li>
+                <li><strong>向量数据库</strong> — 高效存储和检索语义信息</li>
+                <li><strong>Tool Calling</strong> — AI 调用外部工具的能力</li>
+                <li><strong>记忆机制</strong> — 让对话更连贯的智能记忆</li>
+            </ul>
+        </div>
+        <div class="speaker-notes">
+            提醒：今天的内容偏技术，但我会尽量用通俗的语言解释...
+        </div>
+    </section>
+
+    <!-- 第3页: 图文页 -->
+    <section class="slide slide-image">
+        <div class="slide-content">
+            <div class="layout-split">
+                <div class="text-side">
+                    <h2>RAG 架构概览</h2>
+                    <p>检索增强生成（RAG）是一种将外部知识库与语言模型结合的技术。当用户提问时，系统首先从知识库中检索相关信息，然后将这些信息与问题一起输入给语言模型，生成更准确的回答。</p>
+                </div>
+                <div class="image-side">
+                    <!-- 这里可以替换为实际图片 -->
+                    <div style="width: 100%; height: 400px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
+                        [RAG 架构图]
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="speaker-notes">
+            重点讲解：为什么要用 RAG？因为大模型有知识截止日期，且无法访问私有数据...
+        </div>
+    </section>
+
+    <!-- 第4页: 公式页 -->
+    <section class="slide slide-formula">
+        <div class="slide-content">
+            <div class="formula-container">
+                <h2>余弦相似度 — 衡量语义相关性</h2>
+                <div class="formula-box">
+                    $$\cos(\theta) = \frac{\mathbf{A} \cdot \mathbf{B}}{\|\mathbf{A}\| \|\mathbf{B}\|} = \frac{\sum_{i=1}^{n} A_i B_i}{\sqrt{\sum_{i=1}^{n} A_i^2} \sqrt{\sum_{i=1}^{n} B_i^2}}$$
+                </div>
+                <p class="formula-explanation">
+                    在向量检索中，我们使用余弦相似度来计算查询向量与文档向量之间的相似程度。<br>
+                    值越接近 1，表示语义越相关。
+                </p>
+            </div>
+        </div>
+        <div class="speaker-notes">
+            解释：向量数据库的核心就是计算相似度，余弦相似度是最常用的方法...
+        </div>
+    </section>
+
+    <!-- 第5页: 代码页 -->
+    <section class="slide slide-code slide-dark">
+        <div class="slide-content">
+            <h2>文档向量化的实现</h2>
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-dot red"></span>
+                    <span class="code-dot yellow"></span>
+                    <span class="code-dot green"></span>
+                </div>
+                <pre><code class="language-python">from langchain.document_loaders import TextLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import Chroma
+
+# 1. 加载文档
+loader = TextLoader("document.txt")
+documents = loader.load()
+
+# 2. 文档分块（chunking）
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000,
+    chunk_overlap=200
+)
+chunks = text_splitter.split_documents(documents)
+
+# 3. 生成向量并存储
+embeddings = OpenAIEmbeddings()
+vectorstore = Chroma.from_documents(
+    documents=chunks,
+    embedding=embeddings,
+    persist_directory="./chroma_db"
+)</code></pre>
+            </div>
+        </div>
+        <div class="speaker-notes">
+            代码讲解：注意 chunk_size 和 chunk_overlap 的设置，这会影响检索效果...
+        </div>
+    </section>
+
+    <!-- 第6页: 引用页 -->
+    <section class="slide slide-quote slide-dark">
+        <div class="slide-content">
+            <p class="quote-text">"The best way to predict the future<br>is to invent it."</p>
+            <p class="quote-author">— Alan Kay</p>
+        </div>
+        <div class="speaker-notes">
+            结束语：AI 时代，我们每个人都是创造者...
+        </div>
+    </section>
+
+    <!-- 页码 -->
+    <div class="page-number">1 / 6</div>
+
+    <!-- 导航提示 -->
+    <div class="nav-hint">按方向键或空格切换</div>
+
+    <script>
+        // 初始化 KaTeX
+        document.addEventListener("DOMContentLoaded", function() {
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false}
+                    ]
+                });
+            }
+        });
+
+        // 幻灯片导航
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const pageNumber = document.querySelector('.page-number');
+
+        function updatePageNumber() {
+            pageNumber.textContent = `${currentSlide + 1} / ${totalSlides}`;
+        }
+
+        function goToSlide(index) {
+            if (index >= 0 && index < totalSlides) {
+                slides[index].scrollIntoView({ behavior: 'smooth' });
+                currentSlide = index;
+                updatePageNumber();
+            }
+        }
+
+        // 键盘导航
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                goToSlide(currentSlide + 1);
+            } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                e.preventDefault();
+                goToSlide(currentSlide - 1);
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                goToSlide(0);
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                goToSlide(totalSlides - 1);
+            } else if (e.key === 's' || e.key === 'S') {
+                // 切换演讲者模式
+                document.body.classList.toggle('speaker-mode');
+            }
+        });
+
+        // 滚轮导航
+        let scrollTimeout;
+        document.addEventListener('wheel', (e) => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                if (e.deltaY > 0) {
+                    goToSlide(currentSlide + 1);
+                } else {
+                    goToSlide(currentSlide - 1);
+                }
+            }, 50);
+        });
+
+        // 触摸滑动
+        let touchStartY = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            const touchEndY = e.changedTouches[0].clientY;
+            const diff = touchStartY - touchEndY;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    goToSlide(currentSlide + 1);
+                } else {
+                    goToSlide(currentSlide - 1);
+                }
+            }
+        });
+
+        // 监听滚动更新当前页
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    currentSlide = Array.from(slides).indexOf(entry.target);
+                    updatePageNumber();
+                }
+            });
+        }, { threshold: 0.5 });
+
+        slides.forEach(slide => observer.observe(slide));
+
+        // 初始化页码
+        updatePageNumber();
+    </script>
+</body>
+</html>
